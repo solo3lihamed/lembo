@@ -17,12 +17,15 @@
         {{ lesson.content|linebreaks }}
     </div>
 
-    {% if lesson.video_url %}
+    {% if lesson.video_file %}
     <div style="margin-top: 3rem;">
-        <h2>Session Recording 🎥</h2>
-        <div class="brutal-card"
-            style="background: black; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;">
-            <p style="color: white; font-weight: 900;">[ VIDEO PLAYER SIMULATION: {{ lesson.video_url }} ]</p>
+        <h2 style="background: var(--secondary-color); color: white; display: inline-block; padding: 0.5rem 1rem;">
+            Lesson Video 🎥</h2>
+        <div class="brutal-card" style="padding: 1rem; background: #000;">
+            <video width="100%" controls style="display: block; border: 2px solid white;">
+                <source src="{{ lesson.video_file.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
     </div>
     {% endif %}

@@ -16,7 +16,7 @@ from live_sessions.models import LiveSession
 class LessonForm(forms.ModelForm):
     class Meta:
         model = Lesson
-        fields = ['title', 'content', 'video_url', 'order']
+        fields = ['title', 'content', 'video_file', 'order']
 
 class LiveSessionForm(forms.ModelForm):
     class Meta:

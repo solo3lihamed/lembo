@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from courses.models import Course, EnrollmentRequest
 from .models import LiveSession, Attendance
-from .forms import LiveSessionForm
+from courses.forms import LiveSessionForm
 from django.contrib import messages
 from django.utils import timezone
 from notifications.models import Notification
