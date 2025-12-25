@@ -3,12 +3,21 @@ from django.contrib.auth.decorators import login_required
 from .models import Course, EnrollmentRequest, Enrollment, Lesson, LessonProgress, Assignment, AssignmentSubmission, CourseComment
 from .forms import LessonForm, AssignmentForm
 from django.contrib import messages
-from notifications.models import Notification
+from live_sessions.models import LiveSession
 from django.utils import timezone
 
+from django.db.models import Q
+
 def course_list(request):
+    query = request.GET.get('q')
     courses = Course.objects.all()
-    return render(request, 'courses/course_list.html', {'courses': courses})
+    if query:
+        courses = courses.filter(
+            Q(title__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(instructor__username__icontains=query)
+        )
+    return render(request, 'courses/course_list.html', {'courses': courses, 'query': query})
 
 @login_required
 def request_enrollment(request, course_id):
@@ -31,9 +40,8 @@ def course_detail(request, course_id):
     is_enrolled = Enrollment.objects.filter(student=request.user, course=course).exists()
     is_instructor = course.instructor == request.user or request.user.is_staff
     
-    if not (is_enrolled or is_instructor):
-        messages.error(request, "You must be enrolled to view this course! 😠")
-        return redirect('course_list')
+    # Allow non-enrolled users to see course outline but not lesson links
+    # No redirect here anymore, logic moved to template
     
     lessons = course.lessons.all()
     assignments = course.assignments.all()
@@ -134,10 +142,18 @@ def add_assignment(request, course_id):
 @login_required
 def student_dashboard(request):
     enrollments = Enrollment.objects.filter(student=request.user)
+    enrolled_course_ids = enrollments.values_list('course_id', flat=True)
     requests = EnrollmentRequest.objects.filter(student=request.user)
     notifications = request.user.notifications.all()[:10]
+    
+    upcoming_sessions = LiveSession.objects.filter(
+        course_id__in=enrolled_course_ids,
+        scheduled_at__gte=timezone.now()
+    ).order_by('scheduled_at')
+    
     return render(request, 'courses/dashboard.html', {
         'enrollments': enrollments,
         'requests': requests,
-        'notifications': notifications
+        'notifications': notifications,
+        'upcoming_sessions': upcoming_sessions
     })

@@ -1,26 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1 style="margin-bottom: 2rem;">Available Courses 📚</h1>
+<div
+    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;">
+    <h1>Available Courses 📚</h1>
+    <form method="get" style="display: flex; gap: 0.5rem; flex-grow: 1; max-width: 500px;">
+        <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search courses or instructors..."
+            class="brutal-card" style="margin: 0; padding: 0.5rem 1rem; flex-grow: 1; border-width: 2px;">
+        <button type="submit" class="brutal-btn" style="padding: 0.5rem 1rem;">Filter 🔍</button>
+    </form>
+</div>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
     {% for course in courses %}
     <div class="brutal-card" style="background: white;">
         {% if course.thumbnail %}
         <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}"
-            style="width: 100%; border: var(--border-width) solid black; margin-bottom: 1rem;">
+            style="width: 100%; border-bottom: var(--border-width) solid black; margin-bottom: 1rem;">
         {% else %}
         <div
-            style="width: 100%; height: 200px; background: var(--accent-color); border: var(--border-width) solid black; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+            style="width: 100%; height: 200px; background: var(--accent-color); border-bottom: var(--border-width) solid black; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
             📖</div>
         {% endif %}
-        <h2>{{ course.title }}</h2>
-        <p>Instructor: <strong>{{ course.instructor.username }}</strong></p>
-        <p>{{ course.description|truncatewords:20 }}</p>
+        <div style="padding: 1rem;">
+            <h2>{{ course.title }}</h2>
+            <p>Instructor: <strong>{{ course.instructor.username }}</strong></p>
+            <p>{{ course.description|truncatewords:20 }}</p>
 
-        <div style="margin-top: 2rem;">
-            <a href="{% url 'request_enrollment' course.id %}" class="brutal-btn"
-                style="width: 100%; text-align: center;">Request Access 🔑</a>
+            <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <a href="{% url 'course_detail' course.id %}" class="brutal-btn secondary"
+                    style="text-align: center; font-size: 0.9rem;">Details 👁️</a>
+                <a href="{% url 'request_enrollment' course.id %}" class="brutal-btn"
+                    style="text-align: center; font-size: 0.9rem;">Join 🔑</a>
+            </div>
         </div>
     </div>
     {% empty %}
