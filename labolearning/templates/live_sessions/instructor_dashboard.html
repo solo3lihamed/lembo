@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
+    <h1>Instructor Command Center 🎙️</h1>
+    <p>Logged in as: <strong>{{ user.username }}</strong></p>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+    <div>
+        <h2 style="background: var(--primary-color); padding: 0.5rem; display: inline-block;">My Courses</h2>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+            {% for course in courses %}
+            <div class="brutal-card" style="padding: 1.5rem;">
+                <h3 style="margin: 0;"><a href="{% url 'course_detail' course.id %}"
+                        style="text-decoration: none; color: inherit;">{{ course.title }}</a></h3>
+                <p>Students Enrolled: {{ course.enrollments.count }}</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <a href="{% url 'course_detail' course.id %}" class="brutal-btn"
+                        style="padding: 0.4rem 1rem; font-size: 0.8rem;">Manage Course</a>
+                    <a href="{% url 'add_lesson' course.id %}" class="brutal-btn accent"
+                        style="padding: 0.4rem 1rem; font-size: 0.8rem;">Add Lesson</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2 style="background: var(--accent-color); padding: 0.5rem; display: inline-block; margin-top: 3rem;">Student
+            Requests</h2>
+        <div style="margin-top: 1.5rem;">
+            {% for req in pending_requests %}
+            <div class="brutal-card"
+                style="display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
+                <div>
+                    <strong>{{ req.student.username }}</strong> wants to join <strong>{{ req.course.title }}</strong>
+                </div>
+                <a href="{% url 'admin:courses_enrollmentrequest_change' req.id %}" class="brutal-btn"
+                    style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Review in Admin</a>
+            </div>
+            {% empty %}
+            <p>No pending requests. Total peace. 🧘</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <h2 style="background: var(--secondary-color); color: white; padding: 0.5rem; display: inline-block;">Upcoming
+            Live</h2>
+        <div style="margin-top: 1.5rem;">
+            {% for sess in upcoming_sessions %}
+            <div class="brutal-card" style="padding: 1rem; margin-bottom: 1rem;">
+                <strong>{{ sess.title }}</strong><br>
+                <small>{{ sess.scheduled_at }} ({{ sess.duration_minutes }} min)</small>
+                <div style="margin-top: 1rem;">
+                    <a href="{% url 'session_detail' sess.id %}" class="brutal-btn accent"
+                        style="width: 100%; text-align: center;">Start Session 🚀</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>No sessions scheduled.</p>
+            {% endfor %}
+            <a href="{% url 'add_live_session' %}" class="brutal-btn secondary"
+                style="width: 100%; text-align: center; margin-top: 1rem;">Schedule
+                New Session +</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

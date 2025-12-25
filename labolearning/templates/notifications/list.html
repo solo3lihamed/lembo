@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">My Notifications 🔔</h1>
+
+<div style="max-width: 800px;">
+    {% for note in notifications %}
+    <div class="brutal-card {% if not note.is_read %}unread{% endif %}"
+        style="padding: 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <p style="margin: 0; font-size: 1.1rem;">{{ note.message }}</p>
+            <small style="color: #666;">{{ note.created_at|date:"M d, H:i" }} ({{ note.created_at|timesince }}
+                ago)</small>
+        </div>
+        <div>
+            {% if note.link %}
+            <a href="{% url 'mark_as_read' note.id %}" class="brutal-btn accent"
+                style="padding: 0.4rem 1rem; font-size: 0.8rem;">View ➡️</a>
+            {% elif not note.is_read %}
+            <a href="{% url 'mark_as_read' note.id %}" class="brutal-btn"
+                style="padding: 0.4rem 1rem; font-size: 0.8rem;">Mark Read ✅</a>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="brutal-card" style="text-align: center;">
+        <h2>Nothing to see here! 🏜️</h2>
+        <p>You're all caught up with your notifications.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+:root {
+    --bg-color: #f0f0f0;
+    --primary-color: #FFD600;
+    /* Bright Yellow */
+    --secondary-color: #FF00E5;
+    /* Hot Pink */
+    --accent-color: #00F0FF;
+    /* Bright Cyan */
+    --text-color: #000000;
+    --border-width: 4px;
+    --shadow-offset: 6px;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.brutal-card {
+    background: white;
+    border: var(--border-width) solid var(--text-color);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--text-color);
+    padding: 2rem;
+    margin: 1rem;
+    transition: transform 0.1s;
+}
+
+.brutal-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0px var(--text-color);
+}
+
+.brutal-btn {
+    background: var(--primary-color);
+    border: var(--border-width) solid var(--text-color);
+    box-shadow: 4px 4px 0px var(--text-color);
+    padding: 0.8rem 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-block;
+    text-decoration: none;
+    color: black;
+}
+
+.brutal-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--text-color);
+}
+
+.brutal-btn.secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.brutal-btn.accent {
+    background: var(--accent-color);
+}
+
+header {
+    background: var(--primary-color);
+    border-bottom: var(--border-width) solid var(--text-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 2rem;
+    letter-spacing: -1px;
+    text-shadow: 2px 2px 0px white;
+}
+
+nav a {
+    margin-left: 2rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-color);
+    border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+    border-bottom: 2px solid var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.notification-badge {
+    background: red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 0;
+    border: 2px solid black;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.brutal-card.unread {
+    border-left: 10px solid var(--secondary-color);
+}

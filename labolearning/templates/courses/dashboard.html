@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
+    <h1>My Learning Hub 🚀</h1>
+    <p>Welcome back, <strong>{{ user.username }}</strong>!</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+    <div>
+        <h2 style="background: var(--primary-color); padding: 0.5rem; display: inline-block;">My Courses</h2>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+            {% for enrollment in enrollments %}
+            <div class="brutal-card" style="display: flex; gap: 1.5rem; align-items: center; padding: 1.5rem;">
+                <div style="font-size: 2.5rem;">🎓</div>
+                <div>
+                    <h3 style="margin: 0;">{{ enrollment.course.title }}</h3>
+                    <p style="margin: 0.5rem 0;">Enrolled on: {{ enrollment.enrolled_at|date }}</p>
+                    <a href="{% url 'course_detail' enrollment.course.id %}" class="brutal-btn"
+                        style="padding: 0.4rem 1rem; font-size: 0.9rem;">Go to Course ➡️</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>You are not enrolled in any courses yet. Go <a href="{% url 'course_list' %}">explore some!</a></p>
+            {% endfor %}
+        </div>
+
+        <h2 style="background: var(--accent-color); padding: 0.5rem; display: inline-block; margin-top: 3rem;">Pending
+            Requests</h2>
+        <div style="margin-top: 1.5rem;">
+            {% for request in requests %}
+            {% if request.status == 'pending' %}
+            <div class="brutal-card" style="padding: 1rem; border-style: dashed; background: #fffde7;">
+                <strong>{{ request.course.title }}</strong> - Requested on {{ request.requested_at|date }} - <span
+                    style="color: #f57f17; font-weight: 900;">PENDING ⏳</span>
+            </div>
+            {% endif %}
+            {% empty %}
+            <p>No pending requests.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <h2 style="background: var(--secondary-color); color: white; padding: 0.5rem; display: inline-block;">
+                <a href="{% url 'notification_list' %}" style="color: white; text-decoration: none;">Notifications
+                    🔔</a>
+            </h2>
+            <div style="margin-top: 1.5rem;">
+                {% for note in notifications %}
+                <div class="brutal-card {% if not note.is_read %}unread{% endif %}"
+                    style="padding: 1rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                    <p style="margin: 0;">{{ note.message }}</p>
+                    <small style="color: #666;">{{ note.created_at|timesince }} ago</small>
+                </div>
+                {% empty %}
+                <p>No notifications yet. You're all caught up! ✨</p>
+                {% endfor %}
+            </div>
+
+            <div class="brutal-card" style="background: var(--primary-color); margin-top: 3rem;">
+                <h3>Live Sessions</h3>
+                <p>No upcoming live sessions today. Go play outside! 🌞</p>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

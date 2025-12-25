@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Available Courses 📚</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+    {% for course in courses %}
+    <div class="brutal-card" style="background: white;">
+        {% if course.thumbnail %}
+        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}"
+            style="width: 100%; border: var(--border-width) solid black; margin-bottom: 1rem;">
+        {% else %}
+        <div
+            style="width: 100%; height: 200px; background: var(--accent-color); border: var(--border-width) solid black; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+            📖</div>
+        {% endif %}
+        <h2>{{ course.title }}</h2>
+        <p>Instructor: <strong>{{ course.instructor.username }}</strong></p>
+        <p>{{ course.description|truncatewords:20 }}</p>
+
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'request_enrollment' course.id %}" class="brutal-btn"
+                style="width: 100%; text-align: center;">Request Access 🔑</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="brutal-card" style="grid-column: 1 / -1; text-align: center;">
+        <h2>No courses found! 😱</h2>
+        <p>Wait for the instructors to add some magic.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

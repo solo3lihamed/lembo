@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="brutal-card" style="max-width: 500px; margin: 4rem auto;">
+    <h1 style="text-align: center;">Welcome Back! 🤠</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; font-weight: 900; margin-bottom: 0.5rem;">Username</label>
+            <input type="text" name="username" class="brutal-card"
+                style="width: 100%; border-width: 2px; padding: 0.5rem; margin: 0;" required>
+        </div>
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; font-weight: 900; margin-bottom: 0.5rem;">Password</label>
+            <input type="password" name="password" class="brutal-card"
+                style="width: 100%; border-width: 2px; padding: 0.5rem; margin: 0;" required>
+        </div>
+        <button type="submit" class="brutal-btn" style="width: 100%;">Let's Go! 🚀</button>
+    </form>
+</div>
+{% endblock %}

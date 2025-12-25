@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'course_detail' course.id %}"
+        style="text-decoration: none; font-weight: 900; color: var(--secondary-color);">⬅️ Back to Course</a>
+</div>
+
+<div class="brutal-card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+        <h1>Lesson #{{ lesson.order }}: {{ lesson.title }} 🎢</h1>
+        <span class="brutal-card"
+            style="padding: 0.5rem 1rem; background: var(--accent-color); font-weight: 900;">COMPLETED ✅</span>
+    </div>
+
+    <div style="font-size: 1.2rem; line-height: 1.8;">
+        {{ lesson.content|linebreaks }}
+    </div>
+
+    {% if lesson.video_url %}
+    <div style="margin-top: 3rem;">
+        <h2>Session Recording 🎥</h2>
+        <div class="brutal-card"
+            style="background: black; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;">
+            <p style="color: white; font-weight: 900;">[ VIDEO PLAYER SIMULATION: {{ lesson.video_url }} ]</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div style="margin-top: 3rem; display: flex; justify-content: space-between;">
+    <button class="brutal-btn secondary">⬅️ Previous Lesson</button>
+    <button class="brutal-btn accent">Next Lesson ➡️</button>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="brutal-card" style="max-width: 800px; margin: 2rem auto;">
+    <h1>{{ title }} 🚀</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% for field in form %}
+            <div>
+                <label style="display: block; font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase;">{{
+                    field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: red; font-size: 0.8rem; margin-top: 0.3rem;">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button type="submit" class="brutal-btn" style="flex-grow: 1;">Save Changes ✅</button>
+            <a href="javascript:history.back()" class="brutal-btn secondary">Cancel 🚫</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid black;
+        box-shadow: 4px 4px 0px black;
+        font-family: inherit;
+        background: white;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        box-shadow: 6px 6px 0px var(--primary-color);
+        transform: translate(-2px, -2px);
+    }
+</style>
+{% endblock %}

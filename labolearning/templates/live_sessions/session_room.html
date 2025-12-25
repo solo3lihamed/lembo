@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .video-pod {
+        background: black;
+        border: var(--border-width) solid black;
+        aspect-ratio: 16/9;
+        position: relative;
+        box-shadow: 8px 8px 0px var(--text-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .video-pod.instructor-pod {
+        border-color: var(--secondary-color);
+    }
+
+    .pod-label {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        background: var(--primary-color);
+        padding: 0.2rem 0.8rem;
+        font-weight: 900;
+        border: 2px solid black;
+    }
+
+    .controls-bar {
+        background: white;
+        border: var(--border-width) solid black;
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        box-shadow: 6px 6px 0px black;
+    }
+
+    .chat-panel {
+        background: white;
+        border: var(--border-width) solid black;
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 8px 8px 0px black;
+    }
+
+    .chat-messages {
+        flex-grow: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .chat-bubble {
+        padding: 0.5rem 1rem;
+        border: 2px solid black;
+        max-width: 80%;
+        font-size: 0.9rem;
+    }
+
+    .chat-bubble.instructor {
+        background: var(--primary-color);
+        align-self: flex-start;
+    }
+
+    .chat-bubble.me {
+        background: var(--accent-color);
+        align-self: flex-end;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: red;
+        color: white;
+        padding: 0.2rem 0.6rem;
+        font-weight: 900;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h1 style="margin: 0;">LIVE: {{ session.title }} 🎥</h1>
+        <p style="margin: 0;">Course: <strong>{{ session.course.title }}</strong></p>
+    </div>
+    <div style="text-align: right;">
+        <span class="brutal-card" style="padding: 0.5rem 1rem; font-weight: 900; background: var(--accent-color);">
+            STUDENTS: 42 👤
+        </span>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 3fr 1fr; gap: 3rem;">
+    <div>
+        <div class="video-grid">
+            <div class="video-pod instructor-pod">
+                <div class="status-badge">LIVE</div>
+                <div style="font-size: 5rem;">👨‍🏫</div>
+                <div class="pod-label">INSTRUCTOR: {{ session.course.instructor.username }}</div>
+            </div>
+            <!-- Simulating Screen Share or other participants -->
+            <div class="video-pod">
+                <div style="font-size: 5rem; opacity: 0.3;">💻</div>
+                <div style="color: white; font-weight: 900;">Screen Share Inactive</div>
+                <div class="pod-label">SCREEN SHARE</div>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <button class="brutal-btn" title="Mute/Unmute">🎙️</button>
+            <button class="brutal-btn" title="Camera On/Off">📹</button>
+            <button class="brutal-btn accent" title="Share Screen">📤</button>
+            <button class="brutal-btn secondary" title="Raise Hand">✋</button>
+            {% if is_instructor %}
+            <button class="brutal-btn" style="background: red; color: white;">End Session 🛑</button>
+            {% else %}
+            <button class="brutal-btn" style="background: grey; color: white;">Leave 🚪</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="chat-panel">
+            <div style="background: black; color: white; padding: 0.5rem 1rem; font-weight: 900;">LIVE CHAT 💬</div>
+            <div class="chat-messages">
+                <div class="chat-bubble instructor">
+                    <strong>{{ session.course.instructor.username }}:</strong> Welcome to the session! Hope you're ready
+                    for some funny learning.
+                </div>
+                <div class="chat-bubble me">
+                    <strong>Me:</strong> Ready! 🚀
+                </div>
+                <div class="chat-bubble">
+                    <strong>FunnyStudent:</strong> Is it true that CSS is just a prank?
+                </div>
+            </div>
+            <div style="padding: 1rem; border-top: var(--border-width) solid black;">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" placeholder="Be funny here..." class="brutal-card"
+                        style="flex-grow: 1; margin: 0; padding: 0.5rem; border-width: 2px;">
+                    <button class="brutal-btn" style="padding: 0.5rem 1rem;">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="brutal-card" style="margin-top: 2rem; background: var(--primary-color);">
+            <h3>Session Timer</h3>
+            <div style="font-family: monospace; font-size: 2rem; font-weight: 900;">00:45:12</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem 0;">
+    <h1 style="font-size: 4rem; line-height: 1;">Learn Like a <br><span
+            style="background: var(--primary-color); padding: 0 1rem;">GENIUS</span>, Laugh Like a <br><span
+            style="background: var(--secondary-color); color: white; padding: 0 1rem;">LEGEND</span>.</h1>
+    <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 3rem;">The only LMS that doesn't bore you to death.
+        Live sessions, no spam, just learning.</p>
+
+    <div style="display: flex; gap: 2rem; justify-content: center;">
+        <a href="#" class="brutal-btn" style="font-size: 1.5rem;">Explore Courses 📚</a>
+        <a href="#" class="brutal-btn secondary" style="font-size: 1.5rem;">Start Teaching 🍎</a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+    <div class="brutal-card" style="background: var(--accent-color);">
+        <h2>Live Sessions 🎥</h2>
+        <p>Real-time interaction with instructors. No recording unless we say so! (Actually, we record them for you
+            later).</p>
+    </div>
+    <div class="brutal-card" style="background: var(--primary-color);">
+        <h2>In-App Only 📵</h2>
+        <p>Tired of WhatsApp groups? We too. Everything happens right here. No distractions, no notifications outside.
+        </p>
+    </div>
+    <div class="brutal-card" style="background: var(--secondary-color); color: white;">
+        <h2>Admin Approved ✅</h2>
+        <p>We keep it exclusive. Request to join, get approved, and dive into high-quality content.</p>
+    </div>
+</div>
+{% endblock %}
