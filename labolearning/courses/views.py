@@ -90,6 +90,7 @@ def lesson_detail(request, lesson_id):
     return render(request, 'courses/lesson_detail.html', {
         'lesson': lesson,
         'course': course,
+        'all_lessons': course.lessons.all(),
         'is_instructor': is_instructor
     })
 
