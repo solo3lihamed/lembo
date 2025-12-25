@@ -27,7 +27,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
-    # App URLs (to be created)
+    # App URLs
+    path('users/', include('users.urls')),
     path('courses/', include('courses.urls')),
     path('live/', include('live_sessions.urls')),
     path('notifications/', include('notifications.urls')),

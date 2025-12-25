@@ -120,10 +120,14 @@
                 <div style="font-size: 5rem;">👨‍🏫</div>
                 <div class="pod-label">INSTRUCTOR: {{ session.course.instructor.username }}</div>
             </div>
-            <!-- Simulating Screen Share or other participants -->
-            <div class="video-pod">
-                <div style="font-size: 5rem; opacity: 0.3;">💻</div>
-                <div style="color: white; font-weight: 900;">Screen Share Inactive</div>
+            <!-- Screen Share Pod -->
+            <div class="video-pod" id="screen-share-pod">
+                <video id="screen-video" autoplay playsinline
+                    style="width: 100%; height: 100%; object-fit: contain; display: none;"></video>
+                <div id="screen-placeholder" style="text-align: center;">
+                    <div style="font-size: 5rem; opacity: 0.3;">💻</div>
+                    <div style="color: white; font-weight: 900;">Screen Share Inactive</div>
+                </div>
                 <div class="pod-label">SCREEN SHARE</div>
             </div>
         </div>
@@ -131,7 +135,7 @@
         <div class="controls-bar">
             <button class="brutal-btn" title="Mute/Unmute">🎙️</button>
             <button class="brutal-btn" title="Camera On/Off">📹</button>
-            <button class="brutal-btn accent" title="Share Screen">📤</button>
+            <button class="brutal-btn accent" id="share-screen-btn" title="Share Screen">📤</button>
             <button class="brutal-btn secondary" title="Raise Hand">✋</button>
             {% if is_instructor %}
             <button class="brutal-btn" style="background: red; color: white;">End Session 🛑</button>
@@ -144,31 +148,110 @@
     <div>
         <div class="chat-panel">
             <div style="background: black; color: white; padding: 0.5rem 1rem; font-weight: 900;">LIVE CHAT 💬</div>
-            <div class="chat-messages">
-                <div class="chat-bubble instructor">
-                    <strong>{{ session.course.instructor.username }}:</strong> Welcome to the session! Hope you're ready
-                    for some funny learning.
-                </div>
-                <div class="chat-bubble me">
-                    <strong>Me:</strong> Ready! 🚀
-                </div>
-                <div class="chat-bubble">
-                    <strong>FunnyStudent:</strong> Is it true that CSS is just a prank?
-                </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will appear here -->
             </div>
             <div style="padding: 1rem; border-top: var(--border-width) solid black;">
                 <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" placeholder="Be funny here..." class="brutal-card"
+                    <input type="text" id="chat-input" placeholder="Be funny here..." class="brutal-card"
                         style="flex-grow: 1; margin: 0; padding: 0.5rem; border-width: 2px;">
-                    <button class="brutal-btn" style="padding: 0.5rem 1rem;">Send</button>
+                    <button id="send-btn" class="brutal-btn" style="padding: 0.5rem 1rem;">Send</button>
                 </div>
             </div>
         </div>
 
         <div class="brutal-card" style="margin-top: 2rem; background: var(--primary-color);">
             <h3>Session Timer</h3>
-            <div style="font-family: monospace; font-size: 2rem; font-weight: 900;">00:45:12</div>
+            <div id="timer" style="font-family: monospace; font-size: 2rem; font-weight: 900;">00:00:00</div>
         </div>
     </div>
 </div>
+
+<script>
+    const sessionId = "{{ session.id }}";
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const chatSocket = new WebSocket(`${wsScheme}://${window.location.host}/ws/live/${sessionId}/`);
+
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    const shareScreenBtn = document.getElementById('share-screen-btn');
+    const screenVideo = document.getElementById('screen-video');
+    const screenPlaceholder = document.getElementById('screen-placeholder');
+
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'chat') {
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${data.username === "{{ user.username }}" ? 'me' : ''}`;
+            bubble.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+            chatMessages.appendChild(bubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } else if (data.type === 'screen_share') {
+            if (data.active) {
+                // In a real app, we would handle WebRTC offer/answer here
+                // For this demo, we show the indicator
+                console.log(`${data.username} started screen sharing`);
+            } else {
+                console.log(`${data.username} stopped screen sharing`);
+            }
+        }
+    };
+
+    sendBtn.onclick = function () {
+        const message = chatInput.value;
+        if (message) {
+            chatSocket.send(JSON.stringify({ 'type': 'chat', 'message': message }));
+            chatInput.value = '';
+        }
+    };
+
+    chatInput.onkeyup = function (e) {
+        if (e.keyCode === 13) sendBtn.click();
+    };
+
+    // Screen Sharing Logic
+    let screenStream = null;
+
+    shareScreenBtn.onclick = async function () {
+        if (!screenStream) {
+            try {
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                screenVideo.srcObject = screenStream;
+                screenVideo.style.display = 'block';
+                screenPlaceholder.style.display = 'none';
+                shareScreenBtn.classList.add('active');
+
+                chatSocket.send(JSON.stringify({ 'type': 'screen_share_status', 'active': true }));
+
+                screenStream.getVideoTracks()[0].onended = () => stopScreenShare();
+            } catch (err) {
+                console.error("Error sharing screen:", err);
+            }
+        } else {
+            stopScreenShare();
+        }
+    };
+
+    function stopScreenShare() {
+        if (screenStream) {
+            screenStream.getTracks().forEach(track => track.stop());
+            screenStream = null;
+        }
+        screenVideo.style.display = 'none';
+        screenPlaceholder.style.display = 'block';
+        shareScreenBtn.classList.remove('active');
+        chatSocket.send(JSON.stringify({ 'type': 'screen_share_status', 'active': false }));
+    }
+
+    // Simple timer simulation
+    let seconds = 0;
+    setInterval(() => {
+        seconds++;
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+    }, 1000);
+</script>
 {% endblock %}
