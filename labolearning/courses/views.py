@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Course, EnrollmentRequest, Enrollment, Lesson, LessonProgress, Assignment, AssignmentSubmission, CourseComment
-from .forms import LessonForm, AssignmentForm
+from .forms import LessonForm, AssignmentForm, EnrollmentRequestForm
 from django.contrib import messages
 from live_sessions.models import LiveSession
 from django.utils import timezone
@@ -30,9 +30,23 @@ def request_enrollment(request, course_id):
         messages.info(request, "Request already pending.")
         return redirect('course_list')
     
-    EnrollmentRequest.objects.create(student=request.user, course=course)
-    messages.success(request, f"Request sent for '{course.title}'! 🚀")
-    return redirect('course_list')
+    if request.method == 'POST':
+        form = EnrollmentRequestForm(request.POST)
+        if form.is_valid():
+            enrollment_request = form.save(commit=False)
+            enrollment_request.student = request.user
+            enrollment_request.course = course
+            enrollment_request.save()
+            messages.success(request, f"Request sent for '{course.title}'! 🚀")
+            return redirect('course_list')
+    else:
+        form = EnrollmentRequestForm()
+    
+    return render(request, 'courses/request_enrollment.html', {
+        'form': form,
+        'course': course,
+        'title': f'Request Access to {course.title}'
+    })
 
 @login_required
 def course_detail(request, course_id):

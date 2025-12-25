@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="brutal-card" style="max-width: 600px; margin: 3rem auto;">
+    <h1 style="margin-bottom: 1.5rem;">Join "{{ course.title }}" 🔑</h1>
+    <p style="margin-bottom: 2rem; font-weight: 700;">Please provide your communication details (WhatsApp, Email, etc.)
+        and a short note for the instructor.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% for field in form %}
+            <div>
+                <label style="display: block; font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase;">{{
+                    field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: red; font-size: 0.8rem; margin-top: 0.3rem;">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button type="submit" class="brutal-btn" style="width: 100%;">Submit Request 🚀</button>
+            <a href="{% url 'course_list' %}" class="brutal-btn secondary"
+                style="width: 100%; text-align: center;">Cancel 🚫</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    input[type="text"],
+    input[type="email"],
+    textarea {
+        width: 100%;
+        padding: 1rem;
+        border: var(--border-width) solid black;
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0px black;
+        font-family: inherit;
+        background: white;
+    }
+
+    input:focus,
+    textarea:focus {
+        outline: none;
+        box-shadow: 8px 8px 0px var(--primary-color);
+        transform: translate(-2px, -2px);
+    }
+</style>
+{% endblock %}

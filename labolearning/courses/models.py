@@ -35,6 +35,10 @@ class EnrollmentRequest(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollment_requests')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     requested_at = models.DateTimeField(auto_now_add=True)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    whatsapp = models.CharField(max_length=20, blank=True)
+    message = models.TextField(blank=True, help_text="Any additional note for the instructor")
     processed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

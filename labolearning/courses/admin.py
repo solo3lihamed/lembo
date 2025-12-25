@@ -14,9 +14,15 @@ class LessonAdmin(admin.ModelAdmin):
 
 @admin.register(EnrollmentRequest)
 class EnrollmentRequestAdmin(admin.ModelAdmin):
-    list_display = ('student', 'course', 'status', 'requested_at')
+    list_display = ('student', 'course', 'status', 'requested_at', 'phone', 'email', 'whatsapp', 'message_snippet')
     list_filter = ('status', 'course')
+    search_fields = ('student__username', 'course__title', 'message')
     actions = ['approve_requests', 'reject_requests']
+    readonly_fields = ('requested_at', 'student', 'course', 'phone', 'email', 'whatsapp', 'message')
+
+    def message_snippet(self, obj):
+        return obj.message[:50] + '...' if len(obj.message) > 50 else obj.message
+    message_snippet.short_description = 'Message'
 
     def approve_requests(self, request, queryset):
         for obj in queryset:
