@@ -165,10 +165,28 @@ def student_dashboard(request):
         course_id__in=enrolled_course_ids,
         scheduled_at__gte=timezone.now()
     ).order_by('scheduled_at')
+
+    # Calculate progress for each enrollment
+    enrollment_data = []
+    for enrollment in enrollments:
+        total_lessons = enrollment.course.lessons.count()
+        completed_lessons = LessonProgress.objects.filter(student=request.user, lesson__course=enrollment.course, is_completed=True).count()
+        progress = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
+        enrollment_data.append({
+            'enrollment': enrollment,
+            'progress': round(progress)
+        })
+    
+    upcoming_assignments = Assignment.objects.filter(
+        course_id__in=enrolled_course_ids,
+        due_date__gte=timezone.now(),
+        due_date__lte=timezone.now() + timezone.timedelta(days=7)
+    ).order_by('due_date')
     
     return render(request, 'courses/dashboard.html', {
-        'enrollments': enrollments,
+        'enrollment_data': enrollment_data,
         'requests': requests,
         'notifications': notifications,
-        'upcoming_sessions': upcoming_sessions
+        'upcoming_sessions': upcoming_sessions,
+        'upcoming_assignments': upcoming_assignments
     })

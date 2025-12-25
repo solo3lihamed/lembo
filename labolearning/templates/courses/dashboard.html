@@ -2,79 +2,157 @@
 
 {% block content %}
 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
-    <h1>My Learning Hub 🚀</h1>
-    <p>Welcome back, <strong>{{ user.username }}</strong>!</p>
+    <h1 style="font-size: 3.5rem; text-transform: uppercase; line-height: 1;">My Learning Hub 🚀</h1>
+    <p style="font-weight: 700;">Welcome back, <span
+            style="background: var(--primary-color); padding: 0.2rem 0.5rem; border: 2px solid black; box-shadow: 3px 3px 0px black;">{{
+            user.username }}</span>!</p>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;" class="dashboard-grid">
+    <!-- Left Column: Courses and Requests -->
     <div>
-        <h2 style="background: var(--primary-color); padding: 0.5rem; display: inline-block;">My Courses</h2>
-        <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem;">
-            {% for enrollment in enrollments %}
-            <div class="brutal-card" style="display: flex; gap: 1.5rem; align-items: center; padding: 1.5rem;">
-                <div style="font-size: 2.5rem;">🎓</div>
-                <div>
-                    <h3 style="margin: 0;">{{ enrollment.course.title }}</h3>
-                    <p style="margin: 0.5rem 0;">Enrolled on: {{ enrollment.enrolled_at|date }}</p>
-                    <a href="{% url 'course_detail' enrollment.course.id %}" class="brutal-btn"
-                        style="padding: 0.4rem 1rem; font-size: 0.9rem;">Go to Course ➡️</a>
+        <h2
+            style="background: var(--primary-color); padding: 0.5rem 1.5rem; display: inline-block; transform: rotate(-1deg); border: 3px solid black; box-shadow: 5px 5px 0px black;">
+            MY COURSES 🎓</h2>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem;">
+            {% for item in enrollment_data %}
+            <div class="brutal-card" style="padding: 2rem; position: relative; overflow: hidden;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.8rem; text-transform: uppercase;">{{
+                            item.enrollment.course.title }}</h3>
+                        <p style="margin: 0.5rem 0; font-weight: 700; color: #666;">Professor: {{
+                            item.enrollment.course.instructor.username }}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 900;">
+                        <span>Course Progress</span>
+                        <span>{{ item.progress }}%</span>
+                    </div>
+                    <div
+                        style="height: 30px; background: white; border: 3px solid black; box-shadow: 4px 4px 0px black; position: relative;">
+                        <div
+                            style="height: 100%; background: var(--secondary-color); width: {{ item.progress }}%; transition: width 0.5s ease-out;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{% url 'course_detail' item.enrollment.course.id %}" class="brutal-btn"
+                        style="flex: 1; text-align: center; padding: 0.7rem;">Enter Classroom ➡️</a>
                 </div>
             </div>
             {% empty %}
-            <p>You are not enrolled in any courses yet. Go <a href="{% url 'course_list' %}">explore some!</a></p>
+            <div class="brutal-card" style="padding: 3rem; text-align: center; border-style: dashed;">
+                <h2>No courses yet! 🏝️</h2>
+                <p>Don't be a stranger, start learning something funny today.</p>
+                <a href="{% url 'course_list' %}" class="brutal-btn accent"
+                    style="display: inline-block; margin-top: 1.5rem;">Browse Course Library 📚</a>
+            </div>
             {% endfor %}
         </div>
 
-        <h2 style="background: var(--accent-color); padding: 0.5rem; display: inline-block; margin-top: 3rem;">Pending
-            Requests</h2>
-        <div style="margin-top: 1.5rem;">
+        <h2
+            style="background: var(--accent-color); padding: 0.5rem 1.5rem; display: inline-block; margin-top: 4rem; transform: rotate(1deg); border: 3px solid black; box-shadow: 5px 5px 0px black;">
+            PENDING REQUESTS ⏳</h2>
+        <div style="margin-top: 2rem; display: grid; gap: 1rem;">
             {% for request in requests %}
             {% if request.status == 'pending' %}
-            <div class="brutal-card" style="padding: 1rem; border-style: dashed; background: #fffde7;">
-                <strong>{{ request.course.title }}</strong> - Requested on {{ request.requested_at|date }} - <span
-                    style="color: #f57f17; font-weight: 900;">PENDING ⏳</span>
+            <div class="brutal-card"
+                style="padding: 1rem; border-style: dashed; background: #fffde7; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>{{ request.course.title }}</strong>
+                    <div style="font-size: 0.8rem; color: #666;">Requested on {{ request.requested_at|date }}</div>
+                </div>
+                <span
+                    style="background: black; color: white; padding: 0.2rem 0.8rem; font-weight: 900; font-size: 0.8rem;">WAITING...</span>
             </div>
             {% endif %}
             {% empty %}
-            <p>No pending requests.</p>
+            <p>Your record is clean! All requests processed. ✨</p>
             {% endfor %}
         </div>
     </div>
 
+    <!-- Right Column: Live, Assignments, Notifications -->
     <div>
-        <div>
-            <h2 style="background: var(--secondary-color); color: white; padding: 0.5rem; display: inline-block;">
-                <a href="{% url 'notification_list' %}" style="color: white; text-decoration: none;">Notifications
-                    🔔</a>
-            </h2>
-            <div style="margin-top: 1.5rem;">
-                {% for note in notifications %}
-                <div class="brutal-card {% if not note.is_read %}unread{% endif %}"
-                    style="padding: 1rem; margin-bottom: 1rem; font-size: 0.9rem;">
-                    <p style="margin: 0;">{{ note.message }}</p>
-                    <small style="color: #666;">{{ note.created_at|timesince }} ago</small>
-                </div>
-                {% empty %}
-                <p>No notifications yet. You're all caught up! ✨</p>
-                {% endfor %}
-            </div>
-
-            <div class="brutal-card" style="background: var(--primary-color); margin-top: 3rem;">
-                <h3>Live Sessions 🎥</h3>
+        <!-- Live Sessions -->
+        <div class="brutal-card"
+            style="background: var(--secondary-color); color: white; padding: 1.5rem; margin-bottom: 2.5rem;">
+            <h3
+                style="background: black; display: inline-block; padding: 0.3rem 0.8rem; transform: rotate(-2deg); margin-top: 0;">
+                LIVE NOW 🎥</h3>
+            <div style="margin-top: 1.5rem; display: grid; gap: 1rem;">
                 {% for session in upcoming_sessions %}
                 <div
-                    style="background: white; border: 2px solid black; padding: 0.8rem; margin-bottom: 1rem; box-shadow: 4px 4px 0px black;">
-                    <strong>{{ session.title }}</strong><br>
-                    <small>{{ session.scheduled_at|date:"M d, H:i" }}</small>
-                    <div style="margin-top: 0.5rem;">
-                        <a href="{% url 'session_detail' session.id %}" class="brutal-btn accent"
-                            style="padding: 0.2rem 0.6rem; font-size: 0.8rem;">Join Now 🚀</a>
-                    </div>
+                    style="background: white; color: black; border: 3px solid black; padding: 1rem; box-shadow: 4px 4px 0px black;">
+                    <div style="font-weight: 900; font-size: 1.1rem; line-height: 1.2; margin-bottom: 0.5rem;">{{
+                        session.title }}</div>
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--secondary-color);">{{
+                        session.scheduled_at|date:"l, H:i" }}</div>
+                    <a href="{% url 'live_session_detail' session.id %}" class="brutal-btn"
+                        style="display: block; width: 100%; text-align: center; margin-top: 1rem; font-size: 0.8rem; background: var(--accent-color); padding: 0.4rem;">JOIN
+                        SESSION 🚀</a>
                 </div>
                 {% empty %}
-                <p>No upcoming live sessions today. Go play outside! 🌞</p>
+                <p style="font-weight: 700;">No live sessions scheduled. Relax! 🛋️</p>
                 {% endfor %}
             </div>
         </div>
+
+        <!-- Assignments -->
+        <div class="brutal-card"
+            style="background: white; padding: 1.5rem; margin-bottom: 2.5rem; border-color: var(--accent-color);">
+            <h3
+                style="background: var(--accent-color); display: inline-block; padding: 0.3rem 0.8rem; transform: rotate(2deg); margin-top: 0;">
+                DEADLINES 📝</h3>
+            <div style="margin-top: 1.5rem; display: grid; gap: 1rem;">
+                {% for assignment in upcoming_assignments %}
+                <div style="border-left: 5px solid red; padding-left: 1rem; margin-top: 1rem;">
+                    <div style="font-weight: 900;">{{ assignment.title }}</div>
+                    <div style="font-size: 0.8rem; color: red; font-weight: bold;">Due: {{ assignment.due_date|timesince
+                        }}</div>
+                </div>
+                {% empty %}
+                <p>No immediate deadlines. You're a wizard! 🧙‍♂️</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="brutal-card" style="background: white; padding: 1.5rem;">
+            <h3 style="margin-top: 0;">NOTICES 🔔</h3>
+            <div style="display: grid; gap: 0.8rem;">
+                {% for note in notifications %}
+                <div
+                    style="padding: 0.8rem; border: 2px solid black; background: {% if not note.is_read %}#f0f0f0{% else %}white{% endif %}; font-size: 0.85rem; position: relative;">
+                    {% if not note.is_read %}<div
+                        style="position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; background: red; border-radius: 50%; border: 2px solid black;">
+                    </div>{% endif %}
+                    {{ note.message }}
+                    <div style="font-size: 0.7rem; color: #999; margin-top: 0.3rem;">{{ note.created_at|timesince }} ago
+                    </div>
+                </div>
+                {% empty %}
+                <p>Quiet as a library. 🤫</p>
+                {% endfor %}
+                <a href="{% url 'notification_list' %}"
+                    style="text-align: center; display: block; font-weight: 900; margin-top: 1rem; text-decoration: none; color: black; border-bottom: 2px solid black;">View
+                    All ➡️</a>
+            </div>
+        </div>
     </div>
-    {% endblock %}
+</div>
+
+<style>
+    @media (max-width: 1024px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}
